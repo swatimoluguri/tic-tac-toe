@@ -30,7 +30,7 @@
 .block {
   cursor: pointer;
   height: 16vmin;
-  width: 16vmin;
+  width: calc(33.33% - 2vh);
   border-radius: 1vh;
   border: none;
   box-shadow: 0 0 3vh rgba(255, 255, 255, 0.3);
@@ -48,7 +48,7 @@
   position: relative;
   color: rgb(45, 45, 45);
   height: 16vmin;
-  width: 16vmin;
+  width: calc(33.33% - 2vh);
   font-size: 8vh;
   text-align: center;
   display: flex;
