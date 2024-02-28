@@ -20,7 +20,9 @@ const App = () => {
   const [socket, setSocket] = useState(null);
   const [playerName, setPlayerName] = useState("");
   const [opponentName, setOpponentName] = useState(null);
+  const [opponentSocket, setOpponentSocket] = useState(null);
   const [playingAs, setPlayingAs] = useState(null);
+  const [resetGame, setResetGame] = useState(null);
 
   const checkWinner = () => {
     // row dynamic
@@ -117,10 +119,23 @@ const App = () => {
   socket?.on("OpponentNotFound", function () {
     setOpponentName(false);
   });
+  socket?.on("reset_from_server", function () {
+    const reset = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ];
+    setGameState(reset);
+    setCurrentPlayer("circle");
+    setFinishedState(false);
+    setFinishedArrayState([]);
+    setResetGame(Date.now());
+  });
 
   socket?.on("OpponentFound", function (data) {
     setPlayingAs(data.playingAs);
     setOpponentName(data.opponentName);
+    setOpponentSocket(data.opponentSocketId);
   });
 
   async function playOnlineClick() {
@@ -142,6 +157,11 @@ const App = () => {
     });
 
     setSocket(newSocket);
+  }
+  function handleReset() {
+    socket?.emit("request_to_reset", {
+      opponentId: opponentSocket,
+    });
   }
 
   if (!playOnline) {
@@ -182,11 +202,13 @@ const App = () => {
       </div>
       <div>
         <h1 className="game-heading water-background">Tic Tac Toe</h1>
-        {finishedState && (finishedState === playingAs ||finishedState === "opponentLeftMatch")&& (
-          <div className="result">
-            <ConfettiExplosion />
-          </div>
-        )}
+        {finishedState &&
+          (finishedState === playingAs ||
+            finishedState === "opponentLeftMatch") && (
+            <div className="result">
+              <ConfettiExplosion />
+            </div>
+          )}
         <div className="square-wrapper">
           {gameState.map((arr, rowIndex) =>
             arr.map((e, colIndex) => {
@@ -203,6 +225,8 @@ const App = () => {
                   id={rowIndex * 3 + colIndex}
                   key={rowIndex * 3 + colIndex}
                   currentElement={e}
+                  resetGame={resetGame}
+                  setResetGame={setResetGame}
                 />
               );
             })
@@ -228,6 +252,7 @@ const App = () => {
       {finishedState && finishedState === "opponentLeftMatch" && (
         <h2>You won the match, Opponent has left</h2>
       )}
+      {finishedState && <button onClick={handleReset}>Reset</button>}
     </div>
   );
 };

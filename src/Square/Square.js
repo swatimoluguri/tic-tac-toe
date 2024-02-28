@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Square.css";
 
 const circleSvg = (
@@ -48,14 +48,18 @@ const Square = ({
   playingAs,
   currentElement,
   finishedArrayState,
-  setFinishedState,
   finishedState,
   id,
   currentPlayer,
   setCurrentPlayer,
+  resetGame,
+  setResetGame,
 }) => {
   const [icon, setIcon] = useState(null);
-
+  useEffect(() => {
+    setIcon(null);
+    setResetGame(null);
+  }, [resetGame]);
   const clickOnSquare = () => {
     if (playingAs !== currentPlayer) {
       return;
@@ -63,6 +67,17 @@ const Square = ({
 
     if (finishedState) {
       return;
+    }
+    if (resetGame) {
+      setIcon(null);
+      const reset = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ];
+      setGameState(reset);
+      setCurrentPlayer("circle");
+      setResetGame(null);
     }
 
     if (!icon) {

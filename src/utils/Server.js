@@ -37,11 +37,13 @@ io.on("connection", (socket) => {
 
       currentUser.socket.emit("OpponentFound", {
         opponentName: opponentPlayer.playerName,
+        opponentSocketId: opponentPlayer.socket.id,
         playingAs: "circle",
       });
 
       opponentPlayer.socket.emit("OpponentFound", {
         opponentName: currentUser.playerName,
+        opponentSocketId: currentUser.socket.id,
         playingAs: "cross",
       });
 
@@ -59,6 +61,13 @@ io.on("connection", (socket) => {
     } else {
       currentUser.socket.emit("OpponentNotFound");
     }
+  });
+
+  socket.on("request_to_reset", (data) => {
+    const currentUser = allUsers[socket.id];
+    const opponent = allUsers[data.opponentId];
+    opponent.socket.emit("reset_from_server");
+    currentUser.socket.emit("reset_from_server");
   });
 
   socket.on("disconnect", function () {
